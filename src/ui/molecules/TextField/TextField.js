@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 
 import { HBox, VBox, IconLoader, IconSuccess, FieldContainer } from '@ui/atoms'
 import { InputError, InputTip } from '@ui/atoms/Typography'
 import { FormLabel, FormAdornment } from '@ui/molecules'
-import { styled, withTheme } from '@ui/theme'
+import { styled, theme } from '@ui/theme'
 
 const TextFieldContainer = styled.div`
   box-sizing: border-box;
@@ -41,37 +41,48 @@ const StyledInput = styled.input`
   }
 `
 
-export const TextField = withTheme(
-  ({
-    theme,
-    startAdornment,
-    endAdornment,
-    status,
-    disabled,
-    placeholder,
-    label,
-    error,
-    value,
-    tip,
-    valid,
-    onChange,
-    onBlur,
-    onFocus,
-    name,
-  }) => {
-    const [focused, setFocused] = useState(false)
-    const handleFocus = e => {
-      if (onFocus) {
-        onFocus(e)
-      }
-      setFocused(true)
+export class TextField extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      focused: false,
     }
-    const handleBlur = e => {
-      if (onBlur) {
-        onBlur(e)
-      }
-      setFocused(false)
+  }
+
+  setFocused(value) {
+    this.setState({ focused: value })
+  }
+
+  handleFocus = e => {
+    const onFocus = this.props.onFocus
+    if (onFocus) {
+      onFocus(e)
     }
+    this.setFocused(true)
+  }
+  handleBlur = e => {
+    const onBlur = this.props.onBlur
+    if (onBlur) {
+      onBlur(e)
+    }
+    this.setFocused(false)
+  }
+
+  render() {
+    const startAdornment = this.props.startAdornment
+    const endAdornment = this.props.endAdornment
+    const status = this.props.status
+    const disabled = this.props.disabled
+    const placeholder = this.props.placeholder
+    const label = this.props.label
+    const error = this.props.error
+    const value = this.props.value
+    const tip = this.props.tip
+    const valid = this.props.valid
+    const onChange = this.props.onChange
+    const name = this.props.name
+    const focused = this.state.focused
+
     return (
       <FieldContainer>
         <FormLabel valid={valid}>{label}</FormLabel>
@@ -88,8 +99,8 @@ export const TextField = withTheme(
             disabled={disabled}
             value={value}
             onChange={e => onChange(e.currentTarget.value)}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
+            onFocus={this.handleFocus}
+            onBlur={this.handleBlur}
           />
           <FormAdornment>
             {status === 'loading' ? (
@@ -105,8 +116,8 @@ export const TextField = withTheme(
         {error ? <InputError>{error}</InputError> : <InputTip>{tip}</InputTip>}
       </FieldContainer>
     )
-  },
-)
+  }
+}
 
 TextField.propTypes = {
   name: PropTypes.string,
